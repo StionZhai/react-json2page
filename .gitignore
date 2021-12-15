@@ -1,0 +1,9 @@
+.DS_Store
+.idea
+.npmrc
+.vscode
+node_modules
+bin
+lib
+es
+yarn-error.log

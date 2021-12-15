@@ -1,0 +1,11 @@
+src
+demo
+.editorconfig
+.eslintignore
+.eslintrc.json
+.gitignore
+.travis.yml
+rollup.config.js
+yarn-error.log
+node_modules
+.DS_Store

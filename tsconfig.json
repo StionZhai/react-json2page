@@ -1,0 +1,30 @@
+{
+  "include": [
+    "src",
+    "global.d.ts"
+  ],
+  "compilerOptions": {
+    "target": "es5",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    // "module": "commonjs",
+    "lib": [
+      "es2017",
+      "es5",
+      "es2015",
+      "dom"
+    ],
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "importHelpers": true,
+    "sourceMap": true,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true,
+    "removeComments": false
+  }
+}

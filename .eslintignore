@@ -1,0 +1,13 @@
+packages/jssdk/lib/**
+packages/jssdk/bin/**
+packages/jssdk/node_modules/**
+packages/jssdk/src/utils/crypto-js.js
+packages/jssdk/src/utils/request/jsonp.js
+
+
+packages/**/lib/**
+packages/**/bin/**
+packages/**/node_modules/**
+
+**/global.d.ts
+.eslintrc.js
