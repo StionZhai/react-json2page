@@ -9,13 +9,8 @@ class ComponentRegistry {
     [module: string]: ComponentModuleDefine;
   } = {};
 
+  // 重复注册也无所谓，覆盖呗
   register(componentModuleDefine: ComponentModuleDefine) {
-    if (this.modules[componentModuleDefine.module]) {
-      console.warn(`请勿重复注册组件(${componentModuleDefine.module})`)
-      return;
-    }
-
-    // 原始模块声明
     this.modules[componentModuleDefine.module] = componentModuleDefine;
   }
 
@@ -42,4 +37,5 @@ class ComponentRegistry {
   }
 }
 
+// 目前还是先单例，因为 editor 也要用（其实也可以不用，editor直接取组件来读配置）
 export const componentRegistry = new ComponentRegistry();

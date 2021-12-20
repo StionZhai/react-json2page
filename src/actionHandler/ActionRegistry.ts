@@ -1,17 +1,16 @@
-import { ActionHandler } from './ActionHandler';
-import { ActionHandlerConfig, ActionHandlerContext } from './types';
+import { ActionContext, ActionHandler, ActionHandlerConfig } from './ActionHandler';
 
-export class ActionRegistry {
-  context: ActionHandlerContext;
+export class ActionRegistry<T extends ActionContext = any> {
+  context: T;
   handlerMap: {
     [actionHandlerType: string]: ActionHandler;
   } = {};
 
-  constructor(context: ActionHandlerContext) {
+  constructor(context: T) {
     this.context = context;
   }
 
-  register(ActionHandlerConstructor: typeof ActionHandler) {
+  register(ActionHandlerConstructor: new (options: T) => ActionHandler<T>) {
     const actionHandler = new ActionHandlerConstructor(this.context);
 
     if (!actionHandler.type || !actionHandler.handlers) {

@@ -9,3 +9,4 @@ rollup.config.js
 yarn-error.log
 node_modules
 .DS_Store
+.idea

@@ -49,7 +49,7 @@ export const getPropertyFromPath = (props, path) => {
   }
 };
 
-export const setPropertyFromPath = (props, path, value) => {
+export const setPropertyFromPath = (props, path, value, replace = true) => {
   try {
     const pathArr = path.split('.');
 
@@ -58,7 +58,11 @@ export const setPropertyFromPath = (props, path, value) => {
 
     while (currentStack) {
       if (depth === pathArr.length - 1) {
-        currentStack[pathArr[depth]] = value;
+        if (replace) {
+          currentStack[pathArr[depth]] = value;
+        } else {
+          Object.assign(currentStack[pathArr[depth]], value);
+        }
         break;
       }
 

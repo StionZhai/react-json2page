@@ -1,6 +1,5 @@
 import React from 'react';
-import { Json2PageDefine } from '../types';
-import { RuntimeContext, useRuntime } from './useRuntime';
+import { IUseRuntimeProps, RuntimeContext, useRuntime } from './useRuntime';
 import { RuntimeContainer } from './RuntimeContainer';
 import {
   HashRouter as Router,
@@ -8,23 +7,23 @@ import {
   Route,
 } from 'react-router-dom';
 import './style.less';
+import { ActionContext } from '../actionHandler';
 
-export interface IRuntimeProps<T = any> {
-  // deviceId: string;
-  json2pageDefine?: Json2PageDefine;
-  context: T;
-  // Component:
-}
+export type IRuntimeProps<T extends ActionContext> = IUseRuntimeProps<T>;
 
-export function Runtime<T>({
-  // deviceId,
+export function Runtime<T extends ActionContext>({
   json2pageDefine,
+  actions = [],
+  components = [],
   context,
+  envApi,
 }: IRuntimeProps<T>) {
   const [state, methods] = useRuntime({
-    // deviceId,
     json2pageDefine,
+    actions,
+    components,
     context,
+    envApi,
   });
 
   return (
