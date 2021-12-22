@@ -10,9 +10,9 @@ import { ActionTypes, PageStateData } from './useRuntime';
 export interface RuntimeMethods {
   setState: (path: string, data: any, replace?: boolean) => any;
   // TODO: 事件是否都在当前页面触发？如果不在当前页面的话无法正确找到对应节点及页面的状态
-  dispatchEvent: (eventName: string, event: ComponentEvent, nodeDefine: NodeDefine) => any;
+  dispatchEvent: (eventName: string, event: ComponentEvent, nodeDefine: NodeDefine, pageId?: string) => any;
   packStateContextForPage: (pageId?: string) => PageStateData;
-  packDataFromState: (dataDefine: Record<string, any>, stateContext?: Partial<PageStateData>) => Record<string, any>;
+  packDataFromState: (dataDefine: Record<string, any>, stateContext?: Partial<PageStateData>, pageId?: string) => Record<string, any>;
   updateCurrentPage: (pageId: string) => any;
 }
 
@@ -27,7 +27,7 @@ export function useRuntimeMethods(state, dispatch, {
   });
 
   // 事件触发逻辑全在runtime里搞吧，Component里触发后，直接把 nodeDefine.listeners 和触发的 event 传进来，在里面闭环处理事件、handler以及后续feedbacks
-  const dispatchEvent: RuntimeMethods['dispatchEvent'] = (eventName, event, nodeDefine) => {
+  const dispatchEvent: RuntimeMethods['dispatchEvent'] = (eventName, event, nodeDefine, pageId) => {
     console.log('dispatchEvent', eventName, event, nodeDefine);
     // 1. 找出处理器的输入参数（主要是动态参数）
     // 2. 直接调用事件处理器，去找到对应类型的事件处理器，直接调用即可
@@ -73,7 +73,7 @@ export function useRuntimeMethods(state, dispatch, {
           },
         } = listener;
 
-        const params = packDataFromState(actionParams, { eventDetail: event.detail });
+        const params = packDataFromState(actionParams, { eventDetail: event.detail }, pageId);
 
         const resp = await dispatchAction(actionType, actionName, params);
 
@@ -84,7 +84,7 @@ export function useRuntimeMethods(state, dispatch, {
 
           // 找是否有注册监听 feedback 的 listener，有就行了，直接dispatch，里面重新去处理一遍这个feedback事件，这里后续就无需关注了
           if (feedbackListenerMap[id]?.[type]?.length) {
-            dispatchEvent(`${id}.${type}`, { detail: { value: details } }, nodeDefine);
+            dispatchEvent(`${id}.${type}`, { detail: { value: details } }, nodeDefine, pageId);
           }
         }
       } catch (err) {
@@ -93,14 +93,18 @@ export function useRuntimeMethods(state, dispatch, {
     });
   };
 
-  const packStateContextForPage: RuntimeMethods['packStateContextForPage'] = (pageId: string = state.currentPageId) => ({
-    page: state.data.pages[pageId],
-    app: state.data.global,
-  });
+  const packStateContextForPage: RuntimeMethods['packStateContextForPage'] = (pageId: string) => {
+    pageId = pageId || state.currentPageId;
+
+    return {
+      page: state.data.pages[pageId],
+      app: state.data.global,
+    };
+  };
 
   // TODO: 事件有否可能延时触发，导致当前page不一致？
-  const packDataFromState: RuntimeMethods['packDataFromState'] = (dataDefine = {}, stateContext) => {
-    stateContext = Object.assign({}, packStateContextForPage(), stateContext);
+  const packDataFromState: RuntimeMethods['packDataFromState'] = (dataDefine = {}, stateContext, pageId?: string) => {
+    stateContext = Object.assign({}, packStateContextForPage(pageId), stateContext);
 
     const result = {};
 
@@ -111,7 +115,7 @@ export function useRuntimeMethods(state, dispatch, {
       if (!isLinked
         && isPlainObject(value)
         && !isEmpty(value)) {
-        result[propKey] = packDataFromState(value, stateContext);
+        result[propKey] = packDataFromState(value, stateContext, pageId);
         return;
       }
 

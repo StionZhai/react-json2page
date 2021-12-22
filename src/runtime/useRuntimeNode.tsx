@@ -22,7 +22,7 @@ export function useRuntimeNode({
     const { Component, config } = componentInfo;
 
     // TODO: 约束 props 不能声明叫做 events，否则会被覆盖
-    const props = packDataFromState(nodeDefine.props);
+    const props = packDataFromState(nodeDefine.props, null, currentPageId);
 
     // console.log('props', props, 'from:', nodeDefine.props, 'in', data);
 
@@ -35,7 +35,7 @@ export function useRuntimeNode({
       // TODO：尝试在组件中异步触发事件handler，然后页面切走，看看是否会影响获取正确的page scope
       props.events[name] = (event: ComponentEvent) => {
         console.log('trigger event: ', name, event);
-        dispatchEvent(name, event, nodeDefine);
+        dispatchEvent(name, event, nodeDefine, currentPageId);
       };
     });
 
