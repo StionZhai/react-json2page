@@ -61,7 +61,7 @@ export const setPropertyFromPath = (props, path, value, replace = true) => {
         if (replace) {
           currentStack[pathArr[depth]] = value;
         } else {
-          Object.assign(currentStack[pathArr[depth]], value);
+          currentStack[pathArr[depth]] = Object.assign({}, currentStack[pathArr[depth]], value);
         }
         break;
       }
@@ -70,6 +70,7 @@ export const setPropertyFromPath = (props, path, value, replace = true) => {
       depth++;
     }
   } catch (err) {
+    console.warn('setPropertyFromPath err', err);
     return null;
   }
 };

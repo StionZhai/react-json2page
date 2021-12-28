@@ -6,6 +6,7 @@ export class ActionRegistry<T extends ActionContext = any> {
     [actionHandlerType: string]: ActionHandler;
   } = {};
 
+  // TODO: 改成getContext支持动态去取
   constructor(context: T) {
     this.context = context;
   }

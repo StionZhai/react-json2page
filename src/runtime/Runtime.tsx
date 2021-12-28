@@ -33,7 +33,7 @@ export function Runtime<T extends ActionContext>({
       <Router>
         <Switch>
           {/* 蓝牙搜索页 */}
-          {json2pageDefine.pages.map((pageDefine, index) => (
+          {state.ready && json2pageDefine?.pages?.map((pageDefine, index) => (
             <Route
               path={[
                 index === 0 ? '/' : '',

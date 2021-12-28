@@ -25,6 +25,7 @@ export const useRuntimeContext: UseRuntimeContext = () => {
 };
 
 export enum ActionTypes {
+  SetReady = 'setReady',
   UpdateDatasetsDefine = 'updateDatasetsDefine',
   UpdateState = 'UpdateState',
   UpdateCurrentPage = 'updateCurrentPage',
@@ -36,6 +37,7 @@ export interface RuntimeData {
 }
 
 export interface RuntimeContextState {
+  ready: boolean;
   currentPageId: string;
   data: RuntimeData;
 }
@@ -48,6 +50,9 @@ export function reducer(state: RuntimeContextState, action: ReducerAction) {
 
   const nextState = produce(state, (draft) => {
     switch (type) {
+      case ActionTypes.SetReady:
+        draft.ready = true;
+        break;
       // 先这样，editor那边再看怎么优化
       case ActionTypes.UpdateDatasetsDefine: {
         const { json2pageDefine }: { json2pageDefine: Json2PageDefine } = payload;
@@ -62,11 +67,11 @@ export function reducer(state: RuntimeContextState, action: ReducerAction) {
           });
         };
 
-        if (!isEmpty(json2pageDefine.dataset)) {
+        if (!isEmpty(json2pageDefine?.dataset)) {
           initDataset(draft.data.global, json2pageDefine.dataset);
         }
 
-        json2pageDefine.pages.forEach((pageDefine) => {
+        json2pageDefine?.pages?.forEach((pageDefine) => {
           const { id, dataset } = pageDefine;
 
           if (!draft.data.pages[id]) draft.data.pages[id] = {};
@@ -104,26 +109,31 @@ export function reducer(state: RuntimeContextState, action: ReducerAction) {
 function initState(json2PageDefine: Json2PageDefine) {
   // 校验数据
   const runtimeState: RuntimeContextState = {
-    currentPageId: json2PageDefine.pages[0]?.id,
+    ready: false,
+    currentPageId: json2PageDefine?.pages?.[0]?.id,
     data: {
       global: {},
       pages: {},
     },
   };
 
-  const packInitDataset = (datasetDefine) => {
+  const packInitDataset = (datasetDefine = {}) => {
     const initState = {};
 
-    Object.keys(datasetDefine).forEach((datasetKey) => {
-      initState[datasetKey] = datasetDefine[datasetKey]?.defaultValue;
-    });
+    try {
+      Object.keys(datasetDefine).forEach((datasetKey) => {
+        initState[datasetKey] = datasetDefine[datasetKey]?.defaultValue;
+      });
+    } catch (err) {
+      console.warn('parse packInitDataset from define fail', err, datasetDefine);
+    }
 
     return initState;
   };
 
-  runtimeState.data.global = packInitDataset(json2PageDefine.dataset);
+  runtimeState.data.global = packInitDataset(json2PageDefine?.dataset || {});
 
-  json2PageDefine.pages.forEach((pageDefine) => {
+  json2PageDefine?.pages?.forEach((pageDefine) => {
     const { id, dataset } = pageDefine;
 
     runtimeState.data.pages[id] = packInitDataset(dataset);
@@ -173,9 +183,11 @@ export function useRuntime<T extends ActionContext>({
   envApi,
 }: IUseRuntimeProps<T>): [RuntimeContextState, RuntimeMethods] {
   const [state, dispatch] = useReducer<Reducer, Json2PageDefine>(reducer, json2pageDefine, initState);
+
   const runtimeMethods = useRuntimeMethods(state, dispatch, {
     dispatchAction: (...args) => actionRegistryRef.current.dispatchAction(...args),
   });
+
   const contextRef = useRef<T>(new context({
     envApi,
     runtimeActions: {
@@ -183,12 +195,31 @@ export function useRuntime<T extends ActionContext>({
     },
   }));
 
+  useEffect(() => {
+    if (typeof contextRef.current?.init === 'function') {
+      contextRef.current.init();
+    }
+  }, []);
+
   const actionRegistryRef = useRef<ActionRegistry<T>>(new ActionRegistry<T>(contextRef.current));
 
   const updateJson2PageDefineRef = useRef(debounce((json2pageDefine) => dispatch({
     type: ActionTypes.UpdateDatasetsDefine,
     payload: { json2pageDefine },
   }), 300, { leading: true, trailing: true }));
+
+  const runtimeReadyRef = useRef({
+    componentReady: !components.length,
+    actionReady: !actions.length,
+  });
+
+  const checkReady = () => {
+    if (!state.ready
+      && runtimeReadyRef.current.componentReady
+      && runtimeReadyRef.current.actionReady) {
+      dispatch({ type: ActionTypes.SetReady });
+    }
+  };
 
   // TODO：编辑器那边，整个数据监听的话，频率太高了？
   useEffect(() => {
@@ -198,12 +229,16 @@ export function useRuntime<T extends ActionContext>({
   useEffect(() => {
     if (components?.length) {
       components.forEach(component => componentRegistry.register(component));
+      runtimeReadyRef.current.componentReady = true;
+      checkReady();
     }
   }, [components]);
 
   useEffect(() => {
     if (actions?.length) {
       actions.forEach(action => actionRegistryRef.current.register(action));
+      runtimeReadyRef.current.actionReady = true;
+      checkReady();
     }
   }, [actions]);
 

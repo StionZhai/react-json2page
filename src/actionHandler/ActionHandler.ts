@@ -52,7 +52,6 @@ export abstract class ActionContext<T = any> {
   }: IActionContextOptions<T>) {
     this.envApi = envApi;
     this.runtimeActions = runtimeActions;
-    this.init();
   }
 
   abstract init(): any;
