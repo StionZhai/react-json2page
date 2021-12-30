@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 export const normalizeStyleDefine = (styleDefine: NodeStyleDefine): Omit<NodeStyleDefine, 'css'> => {
   if (!styleDefine) return { styleProps: null, className: '' };
 
-  const { css, className, styleProps } = styleDefine;
+  const { css, className, styleProps: { background, ...styleProps } } = styleDefine;
 
   const extendStyleProps = { ...styleProps };
 
@@ -28,9 +28,12 @@ export const normalizeStyleDefine = (styleDefine: NodeStyleDefine): Omit<NodeSty
 
   let result = {};
 
-  // 过滤掉其他所有background开头的属性
-  if (extendStyleProps.background === 'none') {
+  // background 比较特殊，为了避免切换为"无背景"后丢失原背景设置
+  // 设为 none 后仍保留其他背景属性在 styleProps 中，在这里渲染时再去做特殊处理
+  // （TODO：其实这样不好，框架应该尽量通用，不应该揉这种特殊逻辑，想办法放在控制台去做这个留缓存值的处理）
+  if (background === 'none') {
     Object.keys(extendStyleProps).forEach((key) => {
+      // 过滤掉其他所有background开头的属性
       if (!key.startsWith('background')) {
         result[key] = extendStyleProps[key];
       }
@@ -44,5 +47,7 @@ export const normalizeStyleDefine = (styleDefine: NodeStyleDefine): Omit<NodeSty
 
 // StyleDefine -> styleProps
 export const useStyle = (styleDefine: NodeStyleDefine): Omit<NodeStyleDefine, 'css'> => {
-  return useMemo(() => normalizeStyleDefine(styleDefine), [styleDefine]);
+  return useMemo(() => {
+    return normalizeStyleDefine(styleDefine);
+  }, [styleDefine]);
 };

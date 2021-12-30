@@ -87,7 +87,10 @@ export function isEmpty(obj) {
   return true;
 }
 
-export function getDefaultProps(componentConfig: ComponentConfig) {
+export function getDefaultProps(componentConfig: ComponentConfig): {
+  props: any;
+  style: React.CSSProperties;
+} {
   const { props = {}, defaultStyle = {} } = componentConfig;
 
   let { height, width, ...style } = defaultStyle;
@@ -95,7 +98,8 @@ export function getDefaultProps(componentConfig: ComponentConfig) {
   height = height || 80;
   width = width || 200;
 
-  const result: any = {
+  const result = {
+    props: {},
     style: {
       ...style,
       height,
@@ -105,7 +109,7 @@ export function getDefaultProps(componentConfig: ComponentConfig) {
 
   Object.keys(props).forEach((key) => {
     if ('defaultValue' in props[key]) {
-      result[key] = props[key].defaultValue;
+      result.props[key] = props[key].defaultValue;
     }
   });
 

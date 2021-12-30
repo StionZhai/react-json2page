@@ -40,5 +40,5 @@ export function useRuntimeNode({
     });
 
     return [Component, { style: styleProps, className, ...props }];
-  }, [data, nodeDefine, currentPageId]);
+  }, [data, nodeDefine, currentPageId, styleProps, className]);
 }
