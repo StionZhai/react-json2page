@@ -1,6 +1,6 @@
 {
   "name": "react-json2page",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -13,21 +13,21 @@
   "dependencies": {
     "classnames": "^2.3.1",
     "immer": "^9.0.6",
+    "kebab-case": "^1.0.1",
     "lodash.debounce": "^4.0.8",
     "react-router-dom": "^5.3.0",
-    "tslib": "^2.3.1",
-    "kebab-case": "^1.0.1"
+    "tslib": "^2.3.1"
   },
   "peerDependencies": {
     "react": "^16.0.0",
     "react-dom": "^16.0.0"
   },
   "devDependencies": {
+    "@rollup/plugin-image": "^2.1.1",
+    "@svgr/rollup": "^5.5.0",
     "@types/react": "^17.0.33",
     "@types/react-dom": "^17.0.10",
     "@types/react-router-dom": "^5.3.2",
-    "@rollup/plugin-image": "^2.1.1",
-    "@svgr/rollup": "^5.5.0",
     "less": "^4.1.2",
     "postcss": "^8.3.11",
     "postcss-inline-svg": "^5.0.0",
