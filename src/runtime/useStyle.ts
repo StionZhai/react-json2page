@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 export const normalizeStyleDefine = (styleDefine: NodeStyleDefine): Omit<NodeStyleDefine, 'css'> => {
   if (!styleDefine) return { styleProps: null, className: '' };
 
-  const { css, className, styleProps: { background, ...styleProps } } = styleDefine;
+  const { css, className, styleProps: { background, ...styleProps } = {} } = styleDefine;
 
   const extendStyleProps = { ...styleProps };
 
