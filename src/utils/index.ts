@@ -1,4 +1,5 @@
 import { ComponentConfig } from '../Components';
+import { ParamDefine } from '../types';
 
 export * from './isPlainObject';
 
@@ -87,7 +88,21 @@ export function isEmpty(obj) {
   return true;
 }
 
-export function getDefaultProps(componentConfig: ComponentConfig): {
+export function getParamDefineDefaultValues(paramDefineMap: { [key: string]: ParamDefine }) {
+  const result = {};
+
+  Object.keys(paramDefineMap).forEach((key) => {
+    const paramDefine = paramDefineMap[key];
+
+    if ('defaultValue' in paramDefine) {
+      result[key] = paramDefine.defaultValue;
+    }
+  });
+
+  return result;
+}
+
+export function getComponentDefaultProps(componentConfig: ComponentConfig): {
   props: any;
   style: React.CSSProperties;
 } {
@@ -98,20 +113,12 @@ export function getDefaultProps(componentConfig: ComponentConfig): {
   height = height || 80;
   width = width || 200;
 
-  const result = {
-    props: {},
+  return {
+    props: getParamDefineDefaultValues(props),
     style: {
       ...style,
       height,
       width,
     },
   };
-
-  Object.keys(props).forEach((key) => {
-    if ('defaultValue' in props[key]) {
-      result.props[key] = props[key].defaultValue;
-    }
-  });
-
-  return result;
 }
