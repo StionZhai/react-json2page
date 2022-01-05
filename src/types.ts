@@ -61,8 +61,9 @@ export interface NodeDefine {
   position: NodePosition;
   props: { [propKey: string]: any }; // 透传给组件渲染，editor需要处理业务逻辑，runtime不关注
   listeners?: NodeListener[];
-  zIndex: number;
+  zIndex?: number;
   style?: NodeStyleDefine;
+  hidden?: boolean;
   extends?: any;
 }
 

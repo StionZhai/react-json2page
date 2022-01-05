@@ -34,7 +34,7 @@ export function RuntimeNode({
     return result;
   }, [style, x, y, w, h, nodeDefine.zIndex]);
 
-  if (!Component) return null;
+  if (nodeDefine.hidden || !Component) return null;
 
   return (
     <div
