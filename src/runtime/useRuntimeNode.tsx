@@ -22,7 +22,7 @@ export function useRuntimeNode({
     const { Component, config } = componentInfo;
 
     // TODO: 约束 props 不能声明叫做 events，否则会被覆盖
-    const props = packDataFromState(nodeDefine.props, null, currentPageId);
+    const props = packDataFromState(nodeDefine.props, null, currentPageId, nodeDefine.id);
 
     // console.log('props', props, 'from:', nodeDefine.props, 'in', data);
 

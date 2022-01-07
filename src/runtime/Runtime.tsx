@@ -17,6 +17,7 @@ export function Runtime<T extends ActionContext>({
   components = [],
   context,
   envApi,
+  mapNodeProps,
 }: IRuntimeProps<T>) {
   const [state, methods] = useRuntime({
     json2pageDefine,
@@ -24,6 +25,7 @@ export function Runtime<T extends ActionContext>({
     components,
     context,
     envApi,
+    mapNodeProps,
   });
 
   return (

@@ -154,12 +154,23 @@ export interface RuntimeActions {
   setState: RuntimeMethods['setState'];
 }
 
-export interface IUseRuntimeProps<T extends ActionContext> {
+export interface IUseRuntimeProps<T extends ActionContext = any> {
   json2pageDefine?: Json2PageDefine;
   context: new (options: IActionContextOptions<GetContextEnvApiType<T>>) => T;
   envApi: GetContextEnvApiType<T>;
   actions?: (new (options: T) => ActionHandler<T>)[];
   components?: ComponentModuleDefine[];
+  mapNodeProps?: ({
+    props,
+    stateContext,
+    dataDefine,
+    nodeId,
+  }: {
+    props: any;
+    stateContext: PageStateData;
+    dataDefine: any;
+    nodeId?: string;
+  }) => any;
 }
 
 /**
@@ -181,11 +192,13 @@ export function useRuntime<T extends ActionContext>({
   components = [],
   context,
   envApi,
+  mapNodeProps,
 }: IUseRuntimeProps<T>): [RuntimeContextState, RuntimeMethods] {
   const [state, dispatch] = useReducer<Reducer, Json2PageDefine>(reducer, json2pageDefine, initState);
 
   const runtimeMethods = useRuntimeMethods(state, dispatch, {
     dispatchAction: (...args) => actionRegistryRef.current.dispatchAction(...args),
+    mapNodeProps,
   });
 
   const contextRef = useRef<T>(new context({

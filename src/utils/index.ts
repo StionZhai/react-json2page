@@ -18,6 +18,7 @@ export const normalizeProperty = (propKey: string, props: any = {}): {
     linkedPropKey: '',
     value: undefined,
     isLinked: false,
+    isFunction: false,
   };
 
   if (checkIsLinkedProperty(propKey)) {
