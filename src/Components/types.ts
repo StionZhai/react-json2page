@@ -38,11 +38,11 @@ export interface ComponentEvent<T = any> {
   event?: Event; // 如果事件为原生事件触发，则需包含此原始对象，可能是 SyntheticEvent，也可能是 Dom 原生事件
 }
 
-export interface ComponentConfig<T = any> {
+export interface ComponentConfig<T = any, P = any> {
   name?: string;
   title?: string;
   props: {
-    [propKey: string]: ParamDefine;
+    [propKey: string]: ParamDefine<P>;
   };
   events: ComponentEventDefine[];
   defaultStyle?: React.CSSProperties;
