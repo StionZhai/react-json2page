@@ -52,9 +52,9 @@ export interface ComponentConfig<T = any, P = any> {
 // 每个组件集合下有多重组件，如开关有若干种
 // P -> 组件接收的props声明
 // T -> ComponentConfig 的 extends 声明
-export interface Component<P = any, T = any> extends React.FC<P> {
-  // Demo: React.FC<P>;
-  config: ComponentConfig<T>;
+// U -> ParamDefine 的 extends 声明
+export interface Component<P = any, T = any, U = any> extends React.FC<P> {
+  config: ComponentConfig<T, U>;
 }
 
 // 一个模块的定义，如 platform
