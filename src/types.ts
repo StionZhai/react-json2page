@@ -8,6 +8,7 @@ export interface ParamDefine<T = any> {
   type: string; // 数据类型 'string' | 'boolean' | 'number' | 'array' | 'object'
   component: string; // 控制台的表单组件 'icon' | 'input' | 'switch' | 'dataTemplate' | 'select'
   componentParams?: any;
+  disabled?: boolean; // 禁用该配置
   // 新增了组件属性相关的 hooks
   // 目前支持的 hooks 为：
   //  - onChange => 当本属性变更时触发
@@ -15,6 +16,8 @@ export interface ParamDefine<T = any> {
   //   [hookName: string]: (newValue, oldValue, nodeDefine, editorAction) => void;
   // };
   extends?: T;
+  // 用于属性配置表单联动，比如：当 A 属性变为 a，则当前配置 disabled 设为 true
+  mapDefine?: (params: any, currentParamDefine?: ParamDefine<T>) => Partial<ParamDefine<T>>;
 }
 
 export interface StateVariable {
