@@ -17,8 +17,7 @@ export interface ParamDefine<T = any> {
   // };
   extends?: T;
   // 用于属性配置表单联动，比如：当 A 属性变为 a，则当前配置 disabled 设为 true
-  // TODO: 改成 hooks 形式，onFormChange 之类的
-  onParamsFormChange?: (formData: any, currentParamDefine?: ParamDefine<T>) => Partial<ParamDefine<T>>;
+  mapParamDefineOnFormChange?: (formData: any, currentParamDefine?: ParamDefine<T>) => Partial<ParamDefine<T>>;
 }
 
 export interface StateVariable {
