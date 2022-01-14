@@ -160,17 +160,9 @@ export interface IUseRuntimeProps<T extends ActionContext = any> {
   envApi: GetContextEnvApiType<T>;
   actions?: (new (options: T) => ActionHandler<T>)[];
   components?: ComponentModuleDefine[];
-  mapNodeProps?: ({
-    props,
-    stateContext,
-    dataDefine,
-    nodeId,
-  }: {
-    props: any;
-    stateContext: PageStateData;
-    dataDefine: any;
-    nodeId?: string;
-  }) => any;
+  // 关联动态属性之前执行的映射
+  mapNodePropDefinesBeforeLink?: RuntimeMethods['mapNodePropDefinesBeforeLink'];
+  mapNodeProps?: RuntimeMethods['mapNodeProps'];
 }
 
 /**
@@ -193,12 +185,14 @@ export function useRuntime<T extends ActionContext>({
   context,
   envApi,
   mapNodeProps,
+  mapNodePropDefinesBeforeLink,
 }: IUseRuntimeProps<T>): [RuntimeContextState, RuntimeMethods] {
   const [state, dispatch] = useReducer<Reducer, Json2PageDefine>(reducer, json2pageDefine, initState);
 
   const runtimeMethods = useRuntimeMethods(state, dispatch, {
     dispatchAction: (...args) => actionRegistryRef.current.dispatchAction(...args),
     mapNodeProps,
+    mapNodePropDefinesBeforeLink,
   });
 
   const contextRef = useRef<T>(new context({

@@ -17,6 +17,7 @@ export function Runtime<T extends ActionContext>({
   components = [],
   context,
   envApi,
+  mapNodePropDefinesBeforeLink,
   mapNodeProps,
 }: IRuntimeProps<T>) {
   const [state, methods] = useRuntime({
@@ -25,6 +26,7 @@ export function Runtime<T extends ActionContext>({
     components,
     context,
     envApi,
+    mapNodePropDefinesBeforeLink,
     mapNodeProps,
   });
 

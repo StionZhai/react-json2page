@@ -44,7 +44,7 @@ export interface ComponentConfig<T = any, P = any> {
   props: {
     [propKey: string]: ParamDefine<P>;
   };
-  events: ComponentEventDefine[];
+  events?: ComponentEventDefine[];
   defaultStyle?: React.CSSProperties;
   extends?: T;
 }
