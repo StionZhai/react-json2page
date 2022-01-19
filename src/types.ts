@@ -9,6 +9,7 @@ export interface ParamDefine<T = any> {
   component: string; // 控制台的表单组件 'icon' | 'input' | 'switch' | 'dataTemplate' | 'select'
   componentParams?: any;
   disabled?: boolean; // 禁用该配置
+  visible?: boolean; // 是否渲染该选项
   // 新增了组件属性相关的 hooks
   // 目前支持的 hooks 为：
   //  - onChange => 当本属性变更时触发
