@@ -1,6 +1,6 @@
 import { isEmpty, isPlainObject } from '../utils';
 import { NodeDefine, NodeListener } from '../types';
-import { ComponentEvent, ComponentExportInfo } from '../Components';
+import { ComponentEvent, ComponentExportInfo, componentRegistry } from '../Components';
 import { getPropertyFromPath, normalizeProperty } from '../utils';
 import {
   ActionRegistry,
@@ -59,14 +59,17 @@ export function useRuntimeMethods(state: RuntimeContextState, dispatch, {
     // 1. 需要知道 nodeDefine 上还有哪些事件listener
     // 2. 需要能够再次 dispatch feedback event
 
-    // action 传 runtime 一些能力及 evnApi 进去即可，返回结果，以及相应的 fe果返回来就好了，然后继续再 runtime 中处理后续事件分发edback 结
+    // action 传 runtime 一些能力及 evnApi 进去即可，返回结果，以及相应的 feedback 结果返回来就好了，然后继续再 runtime 中处理后续事件分发 feedback 结果
+    const componentInfo = componentRegistry.find(nodeDefine.type);
+
+    const eventDefine = componentInfo?.config?.events?.find(item => item.name === eventName);
 
     const feedbackListenerMap: {
       [listenerId: string]: {
         [feedbackName: string]: NodeListener[];
       };
     } = {};
-    let eventListeners = [];
+    let eventListeners: NodeListener[] = [];
 
     nodeDefine.listeners.forEach((listener) => {
       if (listener.eventName === eventName) {
@@ -94,10 +97,16 @@ export function useRuntimeMethods(state: RuntimeContextState, dispatch, {
           },
         } = listener;
 
+        const extendStateContext: any = {};
+
+        if (eventDefine?.withDetails && event) {
+          extendStateContext.eventDetail = event.detail;
+        }
+
         const params = packDataFromState({
           pageId,
           dataDefines: actionParams,
-          extendStateContext: { eventDetail: event.detail },
+          extendStateContext,
         });
 
         const resp = await dispatchAction(actionType, actionName, params);
