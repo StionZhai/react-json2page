@@ -1,13 +1,22 @@
 import React from 'react';
 
-export interface ParamDefine<T = any> {
+export function defineParamConfig<C = any, T extends keyof C = any, E = any>(componentType: T, config: Omit<ParamDefine<E, C, T>, 'component'>) {
+  return {
+    ...config,
+    component: componentType,
+  };
+}
+
+// C -> FormConfigMap
+// T -> FormComponentType
+// E -> ExtendsDefine
+export interface ParamDefine<E = any, C = any, T extends keyof C = any> {
   title: string;
   defaultValue?: any;
   value?: any;
-  // 这里没法约束了，因为依赖关系是这边依赖控制台的表单，但是代码上又不能去引用那边的声明（TODO：后续再看有无办法，再引一个中间包？）
   type: string; // 数据类型 'string' | 'boolean' | 'number' | 'array' | 'object'
-  component: string; // 控制台的表单组件 'icon' | 'input' | 'switch' | 'dataTemplate' | 'select'
-  componentParams?: any;
+  component: T;
+  componentParams?: C[T];
   disabled?: boolean; // 禁用该配置
   visible?: boolean; // 是否渲染该选项
   // 新增了组件属性相关的 hooks
@@ -16,9 +25,9 @@ export interface ParamDefine<T = any> {
   // hooks?: {
   //   [hookName: string]: (newValue, oldValue, nodeDefine, editorAction) => void;
   // };
-  extends?: T;
+  extends?: E;
   // 用于属性配置表单联动，比如：当 A 属性变为 a，则当前配置 disabled 设为 true
-  mapParamDefineOnFormChange?: (formData: any, currentParamDefine?: ParamDefine<T>) => Partial<ParamDefine<T>>;
+  mapParamDefineOnFormChange?: (formData: any, currentParamDefine?: ParamDefine<E, C, T>) => Partial<ParamDefine<E, C, T>>;
 }
 
 export interface StateVariable {

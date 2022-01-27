@@ -19,6 +19,7 @@ export function RuntimeNode({
   const nodeStyle = useMemo(() => {
     const result = {
       ...style,
+      boxSizing: 'border-box',
       position: 'absolute',
       top: 0,
       left: 0,

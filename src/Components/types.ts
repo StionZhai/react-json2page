@@ -38,15 +38,15 @@ export interface ComponentEvent<T = any> {
   event?: Event; // 如果事件为原生事件触发，则需包含此原始对象，可能是 SyntheticEvent，也可能是 Dom 原生事件
 }
 
-export interface ComponentConfig<T = any, P = any> {
+export interface ComponentConfig<ComponentExtends = any> {
   name?: string;
   title?: string;
   props: {
-    [propKey: string]: ParamDefine<P>;
+    [propKey: string]: ParamDefine;
   };
   events?: ComponentEventDefine[];
   defaultStyle?: React.CSSProperties;
-  extends?: T;
+  extends?: ComponentExtends;
 }
 
 export interface ComponentBaseProps extends StyledProps {
@@ -59,8 +59,8 @@ export interface ComponentBaseProps extends StyledProps {
 // P -> 组件接收的props声明
 // T -> ComponentConfig 的 extends 声明
 // U -> ParamDefine 的 extends 声明
-export interface Component<P extends ComponentBaseProps = any, T = any, U = any> extends React.FC<P> {
-  config: ComponentConfig<T, U>;
+export interface Component<P extends ComponentBaseProps = any, T = any> extends React.FC<P> {
+  config: ComponentConfig<T>;
 }
 
 // 一个模块的定义，如 platform
