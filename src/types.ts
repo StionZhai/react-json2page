@@ -27,7 +27,7 @@ export interface ParamDefine<E = any, C = any, T extends keyof C = any> {
   // };
   extends?: E;
   // 用于属性配置表单联动，比如：当 A 属性变为 a，则当前配置 disabled 设为 true
-  mapParamDefineOnFormChange?: (formData: any, currentParamDefine?: ParamDefine<E, C, T>) => Partial<ParamDefine<E, C, T>>;
+  mapParamDefineOnPropsChange?: (props: any, currentParamDefine?: ParamDefine<E, C, T>) => Partial<ParamDefine<E, C, T>>;
 }
 
 export interface StateVariable {

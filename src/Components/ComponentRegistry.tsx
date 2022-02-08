@@ -27,7 +27,7 @@ class ComponentRegistry {
       }
     }
 
-    console.warn(`无法找到对应组件(module: ${nodeType.module}, component: ${nodeType.component})`);
+    console.log(`无法找到对应组件(module: ${nodeType.module}, component: ${nodeType.component})`);
 
     return null;
   }
