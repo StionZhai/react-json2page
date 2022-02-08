@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function defineParamConfig<FormComponentConfigMap = any, FormComponentType extends keyof FormComponentConfigMap = any, ExtendsDefine = any>(componentType: FormComponentType, config: Omit<ParamDefine<ExtendsDefine, FormComponentConfigMap, FormComponentType>, 'component'>) {
+export function defineParamDefine<FormComponentConfigMap = any, FormComponentType extends keyof FormComponentConfigMap = any, ExtendsDefine = any>(componentType: FormComponentType, config: Omit<ParamDefine<ExtendsDefine, FormComponentConfigMap, FormComponentType>, 'component'>) {
   return {
     ...config,
     component: componentType,
