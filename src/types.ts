@@ -1,22 +1,15 @@
 import React from 'react';
 
-export function defineParamDefine<FormComponentConfigMap = any, FormComponentType extends keyof FormComponentConfigMap = any, ExtendsDefine = any>(componentType: FormComponentType, config: Omit<ParamDefine<ExtendsDefine, FormComponentConfigMap, FormComponentType>, 'component'>) {
-  return {
-    ...config,
-    component: componentType,
-  };
-}
-
 // C -> FormComponentConfigMap
 // T -> FormComponentType
 // E -> ExtendsDefine
-export interface ParamDefine<ExtendsDefine = any, FormComponentConfigMap = any, FormComponentType extends keyof FormComponentConfigMap = any> {
+export interface ParamDefine<ExtendsDefine = any, Component = any, ComponentParams = any> {
   title: string;
   defaultValue?: any;
   value?: any;
   type: string; // 数据类型 'string' | 'boolean' | 'number' | 'array' | 'object'
-  component: FormComponentType;
-  componentParams?: FormComponentConfigMap[FormComponentType];
+  component: Component;
+  componentParams?: ComponentParams;
   disabled?: boolean; // 禁用该配置
   visible?: boolean; // 是否渲染该选项
   // 新增了组件属性相关的 hooks
@@ -27,7 +20,7 @@ export interface ParamDefine<ExtendsDefine = any, FormComponentConfigMap = any, 
   // };
   extends?: ExtendsDefine;
   // 用于属性配置表单联动，比如：当 A 属性变为 a，则当前配置 disabled 设为 true
-  mapParamDefineOnPropsChange?: (props: any, currentParamDefine?: ParamDefine<ExtendsDefine, FormComponentConfigMap, FormComponentType>) => Partial<ParamDefine<ExtendsDefine, FormComponentConfigMap, FormComponentType>>;
+  mapParamDefineOnPropsChange?: (props: any, currentParamDefine?: ParamDefine<ExtendsDefine, Component, ComponentParams>) => Partial<ParamDefine<ExtendsDefine, Component, ComponentParams>>;
 }
 
 export interface StateVariable {
