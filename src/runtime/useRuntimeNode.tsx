@@ -4,18 +4,22 @@ import { useRuntimeContext } from './useRuntime';
 import { componentRegistry, ComponentEvent } from '../Components';
 import { useStyle } from './useStyle';
 
-export function useRuntimeNode({
+export function useRuntimeNode<NodeExtends = any>({
   nodeDefine,
 }: {
-  nodeDefine: NodeDefine;
-}): [React.ElementType, Record<string, any>] {
+  nodeDefine: NodeDefine<NodeExtends>;
+}): [React.ElementType, {
+  [propKey: string]: any;
+}] {
   const [{ data, currentPageId }, {
     packDataFromState,
     packStateContextForPage,
     dispatchEvent,
     mapNodeProps,
     mapNodePropDefinesBeforeLink,
+    mapNodeStyle,
   }] = useRuntimeContext();
+
   const { styleProps, className } = useStyle(nodeDefine.style);
 
   return useMemo(() => {
@@ -27,7 +31,10 @@ export function useRuntimeNode({
 
     const { Component, config } = componentInfo;
 
-    let { props: propDefines } = nodeDefine;
+    let {
+      props: propDefines,
+      position: { x, y, w, h },
+    } = nodeDefine;
 
     const stateContext = packStateContextForPage(currentPageId);
 
@@ -41,9 +48,6 @@ export function useRuntimeNode({
     }
 
     // TODO: 约束 props 不能声明叫做 events，否则会被覆盖
-    if (nodeDefine.id === 'packDataFromState') {
-      debugger
-    }
 
     let props = packDataFromState({
       pageId: currentPageId,
@@ -77,6 +81,38 @@ export function useRuntimeNode({
       });
     }
 
-    return [Component, { style: styleProps, className, ...props }];
-  }, [data, nodeDefine, currentPageId, styleProps, className]);
+    const nodeStyle: React.CSSProperties = {
+      ...styleProps,
+      boxSizing: 'border-box',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      transform: `translate(${x}px, ${y}px)`,
+      width: w,
+      height: h,
+    };
+
+    if (typeof nodeDefine.zIndex !== 'undefined') {
+      nodeStyle.zIndex = nodeDefine.zIndex;
+    }
+
+    const componentStyle: React.CSSProperties = {
+      width: '100%',
+      height: '100%',
+    };
+
+    return [Component, {
+      componentStyle,
+      nodeStyle: mapNodeStyle({
+        style: nodeStyle,
+        stateContext,
+        nodeDefine,
+        propDefines,
+        componentInfo,
+        props,
+      }),
+      className,
+      ...props,
+    }];
+  }, [data, nodeDefine, currentPageId, styleProps, className, mapNodeStyle]);
 }

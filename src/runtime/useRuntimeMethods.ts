@@ -1,11 +1,11 @@
 import { isEmpty, isPlainObject } from '../utils';
 import { NodeDefine, NodeListener } from '../types';
-import { ComponentEvent, ComponentExportInfo, componentRegistry } from '../Components';
+import { ComponentEvent, componentRegistry } from '../Components';
 import { getPropertyFromPath, normalizeProperty } from '../utils';
 import {
   ActionRegistry,
 } from '../actionHandler';
-import { ActionTypes, IUseRuntimeProps, PageStateData, RuntimeContextState } from './useRuntime';
+import { ActionTypes, PageStateData, RuntimeContextState } from './useRuntime';
 
 export interface RuntimeMethods {
   setState: (path: string, data: any, replace?: boolean) => any;
@@ -19,29 +19,12 @@ export interface RuntimeMethods {
     extendStateContext?: Partial<PageStateData>;
   }) => Record<string, any>;
   updateCurrentPage: (pageId: string) => any;
-  mapNodePropDefinesBeforeLink?: (params: {
-    stateContext: PageStateData;
-    nodeDefine: NodeDefine;
-    propDefines: NodeDefine['props'];
-    componentInfo: ComponentExportInfo;
-  }) => any;
-  mapNodeProps?: (params: {
-    nodeDefine: NodeDefine;
-    propDefines: NodeDefine['props'];
-    stateContext: PageStateData;
-    componentInfo: ComponentExportInfo;
-    props: any;
-  }) => any;
 }
 
 export function useRuntimeMethods(state: RuntimeContextState, dispatch, {
   dispatchAction,
-  mapNodeProps = ({ props }) => props,
-  mapNodePropDefinesBeforeLink = ({ nodeDefine, propDefines }) => propDefines || nodeDefine.props,
 }: {
   dispatchAction: ActionRegistry['dispatchAction'];
-  mapNodeProps?: IUseRuntimeProps['mapNodeProps'];
-  mapNodePropDefinesBeforeLink?: IUseRuntimeProps['mapNodePropDefinesBeforeLink'];
 }): RuntimeMethods {
   const setState: RuntimeMethods['setState'] = (path, data, replace = true) => dispatch({
     type: ActionTypes.UpdateState,
@@ -209,7 +192,5 @@ export function useRuntimeMethods(state: RuntimeContextState, dispatch, {
     packStateContextForPage,
     packDataFromState,
     updateCurrentPage,
-    mapNodeProps,
-    mapNodePropDefinesBeforeLink,
   };
 }

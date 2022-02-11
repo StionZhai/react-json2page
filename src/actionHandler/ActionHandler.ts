@@ -37,7 +37,7 @@ export interface ActionHandlerConfig<Feedbacks extends {
 
 export type GetContextEnvApiType<C extends ActionContext> = C extends ActionContext<infer T> ? T : unknown;
 
-export interface IActionContextOptions<T = any> {
+export interface ActionContextOptions<T = any> {
   envApi: T;
   runtimeActions: RuntimeActions;
 }
@@ -49,7 +49,7 @@ export abstract class ActionContext<T = any> {
   constructor({
     envApi,
     runtimeActions,
-  }: IActionContextOptions<T>) {
+  }: ActionContextOptions<T>) {
     this.envApi = envApi;
     this.runtimeActions = runtimeActions;
   }

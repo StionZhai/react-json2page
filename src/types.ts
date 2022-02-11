@@ -62,7 +62,7 @@ export interface NodeListener {
   extends?: any;
 }
 
-export interface NodeDefine {
+export interface NodeDefine<T = any> {
   id: string;
   type: NodeType;
   position: NodePosition;
@@ -71,22 +71,22 @@ export interface NodeDefine {
   zIndex?: number;
   style?: NodeStyleDefine;
   hidden?: boolean;
-  extends?: any;
+  extends?: T;
 }
 
-export interface PageDefine {
+export interface PageDefine<PageExtends = any, NodeExtends = any> {
   id: string;
   title: string;
-  nodes: NodeDefine[];
+  nodes: NodeDefine<NodeExtends>[];
   dataset: Dataset;
   style?: NodeStyleDefine;
-  extends?: any;
+  extends?: PageExtends;
 }
 
-export interface Json2PageDefine {
-  pages: PageDefine[];
+export interface Json2PageDefine<GlobalExtends = any, PageExtends = any, NodeExtends = any> {
+  pages: PageDefine<PageExtends, NodeExtends>[];
   dataset: Dataset;
-  extends?: any;
+  extends?: GlobalExtends;
 }
 
 /**

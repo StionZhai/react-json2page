@@ -5,13 +5,13 @@ import { useRuntimeContext } from './useRuntime';
 import { useStyle } from './useStyle';
 import classNames from 'classnames';
 
-export interface IRuntimeContainer {
+export interface RuntimeContainerProps {
   pageDefine: PageDefine;
 }
 
 export function RuntimeContainer({
   pageDefine,
-}: IRuntimeContainer) {
+}: RuntimeContainerProps) {
   const [, runtimeActions] = useRuntimeContext();
 
   useEffect(() => {

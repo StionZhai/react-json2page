@@ -1,5 +1,5 @@
 import React from 'react';
-import { IUseRuntimeProps, RuntimeContext, useRuntime } from './useRuntime';
+import { UseRuntimeProps, RuntimeContext, useRuntime } from './useRuntime';
 import { RuntimeContainer } from './RuntimeContainer';
 import {
   HashRouter as Router,
@@ -9,7 +9,7 @@ import {
 import './style.less';
 import { ActionContext } from '../actionHandler';
 
-export type IRuntimeProps<T extends ActionContext> = IUseRuntimeProps<T>;
+export type RuntimeProps<T extends ActionContext> = UseRuntimeProps<T>;
 
 export function Runtime<T extends ActionContext>({
   json2pageDefine,
@@ -17,17 +17,15 @@ export function Runtime<T extends ActionContext>({
   components = [],
   context,
   envApi,
-  mapNodePropDefinesBeforeLink,
-  mapNodeProps,
-}: IRuntimeProps<T>) {
+  options,
+}: RuntimeProps<T>) {
   const [state, methods] = useRuntime({
     json2pageDefine,
     actions,
     components,
     context,
     envApi,
-    mapNodePropDefinesBeforeLink,
-    mapNodeProps,
+    options,
   });
 
   return (

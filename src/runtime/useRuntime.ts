@@ -8,15 +8,14 @@ import {
   ActionContext,
   ActionHandler,
   ActionRegistry,
-  GetContextEnvApiType, IActionContextOptions
+  GetContextEnvApiType, ActionContextOptions
 } from '../actionHandler';
 import { RuntimeMethods, useRuntimeMethods } from './useRuntimeMethods';
+import { RuntimeOptions, useRuntimeOptions } from './useRuntimeOptions';
 
-type RuntimeContextValue = [RuntimeContextState, RuntimeMethods];
+export const RuntimeContext = createContext<UseRuntimeReturn>(null);
 
-export const RuntimeContext = createContext<RuntimeContextValue>(null);
-
-type UseRuntimeContext = () => RuntimeContextValue;
+type UseRuntimeContext = () => UseRuntimeReturn;
 
 export const useRuntimeContext: UseRuntimeContext = () => {
   const [state, actions] = useContext(RuntimeContext);
@@ -154,16 +153,20 @@ export interface RuntimeActions {
   setState: RuntimeMethods['setState'];
 }
 
-export interface IUseRuntimeProps<T extends ActionContext = any> {
-  json2pageDefine?: Json2PageDefine;
-  context: new (options: IActionContextOptions<GetContextEnvApiType<T>>) => T;
+export interface UseRuntimeProps<T extends ActionContext = any,
+  GlobalExtends = any,
+  PageExtends = any,
+  NodeExtends = any,
+> {
+  json2pageDefine?: Json2PageDefine<GlobalExtends, PageExtends, NodeExtends>;
+  context: new (options: ActionContextOptions<GetContextEnvApiType<T>>) => T;
   envApi: GetContextEnvApiType<T>;
   actions?: (new (options: T) => ActionHandler<T>)[];
   components?: ComponentModuleDefine[];
-  // 关联动态属性之前执行的映射
-  mapNodePropDefinesBeforeLink?: RuntimeMethods['mapNodePropDefinesBeforeLink'];
-  mapNodeProps?: RuntimeMethods['mapNodeProps'];
+  options?: Partial<RuntimeOptions<NodeExtends>>;
 }
+
+export type UseRuntimeReturn<NodeExtends = any> = [RuntimeContextState, RuntimeMethods & RuntimeOptions<NodeExtends>];
 
 /**
  * 负责整个 Runtime 的状态控制
@@ -178,21 +181,24 @@ export interface IUseRuntimeProps<T extends ActionContext = any> {
  * 3. 请求 AppApi/云api
  * 4. 调用上下文方法（wxjssdk/mock api）
  */
-export function useRuntime<T extends ActionContext>({
+export function useRuntime<T extends ActionContext = any,
+  GlobalExtends = any,
+  PageExtends = any,
+  NodeExtends = any,
+>({
   json2pageDefine,
   actions = [],
   components = [],
   context,
   envApi,
-  mapNodeProps,
-  mapNodePropDefinesBeforeLink,
-}: IUseRuntimeProps<T>): [RuntimeContextState, RuntimeMethods] {
-  const [state, dispatch] = useReducer<Reducer, Json2PageDefine>(reducer, json2pageDefine, initState);
+  options,
+}: UseRuntimeProps<T, GlobalExtends, PageExtends, NodeExtends>): UseRuntimeReturn<NodeExtends> {
+  const [state, dispatch] = useReducer<Reducer, Json2PageDefine<GlobalExtends, PageExtends, NodeExtends>>(reducer, json2pageDefine, initState);
+
+  const runtimeOptionMethods = useRuntimeOptions<NodeExtends>(options);
 
   const runtimeMethods = useRuntimeMethods(state, dispatch, {
     dispatchAction: (...args) => actionRegistryRef.current.dispatchAction(...args),
-    mapNodeProps,
-    mapNodePropDefinesBeforeLink,
   });
 
   const contextRef = useRef<T>(new context({
@@ -249,5 +255,8 @@ export function useRuntime<T extends ActionContext>({
     }
   }, [actions]);
 
-  return [state, runtimeMethods];
+  return [state, {
+    ...runtimeMethods,
+    ...runtimeOptionMethods,
+  }];
 }
