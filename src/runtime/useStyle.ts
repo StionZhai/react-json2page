@@ -1,13 +1,16 @@
-import { NodeStyleDefine } from '../types';
+import { FixedPositionValue, NodePosition, StyleDefine } from '../types';
 import kebabCase from 'kebab-case';
 import { useMemo } from 'react';
 
-export const normalizeStyleDefine = (styleDefine: NodeStyleDefine): Omit<NodeStyleDefine, 'css'> => {
+export const normalizeStyleDefine = (styleDefine: StyleDefine, nodePosition?: NodePosition): Omit<StyleDefine, 'css'> => {
   if (!styleDefine) return { styleProps: null, className: '' };
 
   const { css, className, styleProps: { background, ...styleProps } = {} } = styleDefine;
 
-  const extendStyleProps = { ...styleProps };
+  const extendStyleProps: React.CSSProperties = {
+    boxSizing: 'border-box',
+    ...styleProps
+  };
 
   if (css && typeof css === 'string') {
     css.replace(/[\r\n\s]/g, '')
@@ -42,12 +45,55 @@ export const normalizeStyleDefine = (styleDefine: NodeStyleDefine): Omit<NodeSty
     result = extendStyleProps;
   }
 
-  return { styleProps: result, className };
+
+  return {
+    className,
+    styleProps: {
+      ...result,
+      // 如果有，应该更高优先级，除非用的position.type:custom
+      ...handlePositionStyle(nodePosition),
+    },
+  };
 }
 
+export const normalizeFixedPositionValue = (customPositionValue: FixedPositionValue) => (customPositionValue === '' ? 'auto' : customPositionValue);
+
+export const handlePositionStyle = (nodePosition: NodePosition): React.CSSProperties => {
+  const style = {};
+
+  if (nodePosition) {
+    switch (nodePosition.type) {
+      case 'fixed':
+        Object.assign(style, {
+          position: 'absolute',
+          top: normalizeFixedPositionValue(nodePosition.t),
+          left: normalizeFixedPositionValue(nodePosition.l),
+          right: normalizeFixedPositionValue(nodePosition.r),
+          bottom: normalizeFixedPositionValue(nodePosition.b),
+          height: normalizeFixedPositionValue(nodePosition.h),
+          width: normalizeFixedPositionValue(nodePosition.w),
+        });
+        break;
+      case 'custom':
+        break;
+      case 'absolute':
+      default:
+        Object.assign(style, {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          transform: `translate(${nodePosition.x}px, ${nodePosition.y}px)`,
+          width: nodePosition.w,
+          height: nodePosition.h,
+        });
+        break;
+    }
+  }
+
+  return style;
+};
+
 // StyleDefine -> styleProps
-export const useStyle = (styleDefine: NodeStyleDefine): Omit<NodeStyleDefine, 'css'> => {
-  return useMemo(() => {
-    return normalizeStyleDefine(styleDefine);
-  }, [styleDefine]);
+export const useStyle = (styleDefine: StyleDefine, nodePosition?: NodePosition): Omit<StyleDefine, 'css'> => {
+  return useMemo(() => normalizeStyleDefine(styleDefine, nodePosition), [styleDefine, nodePosition]);
 };

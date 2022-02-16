@@ -9,6 +9,11 @@ export function useRuntimeNode<NodeExtends = any>({
 }: {
   nodeDefine: NodeDefine<NodeExtends>;
 }): [React.ElementType, {
+  nodeStyle?: React.CSSProperties;
+  componentStyle?: React.CSSProperties;
+  children?: NodeDefine[];
+
+  // ...props
   [propKey: string]: any;
 }] {
   const [{ data, currentPageId }, {
@@ -20,7 +25,7 @@ export function useRuntimeNode<NodeExtends = any>({
     mapNodeStyle,
   }] = useRuntimeContext();
 
-  const { styleProps, className } = useStyle(nodeDefine.style);
+  const { styleProps, className } = useStyle(nodeDefine.style, nodeDefine.position);
 
   return useMemo(() => {
     const componentInfo = componentRegistry.find(nodeDefine.type);
@@ -33,7 +38,7 @@ export function useRuntimeNode<NodeExtends = any>({
 
     let {
       props: propDefines,
-      position: { x, y, w, h },
+      children,
     } = nodeDefine;
 
     const stateContext = packStateContextForPage(currentPageId);
@@ -81,16 +86,7 @@ export function useRuntimeNode<NodeExtends = any>({
       });
     }
 
-    const nodeStyle: React.CSSProperties = {
-      ...styleProps,
-      boxSizing: 'border-box',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      transform: `translate(${x}px, ${y}px)`,
-      width: w,
-      height: h,
-    };
+    const nodeStyle: React.CSSProperties = { ...styleProps };
 
     if (typeof nodeDefine.zIndex !== 'undefined') {
       nodeStyle.zIndex = nodeDefine.zIndex;
@@ -112,6 +108,7 @@ export function useRuntimeNode<NodeExtends = any>({
         props,
       }),
       className,
+      children,
       ...props,
     }];
   }, [data, nodeDefine, currentPageId, styleProps, className, mapNodeStyle]);

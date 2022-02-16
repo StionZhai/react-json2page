@@ -8,7 +8,7 @@ export function RuntimeNode({
   nodeDefine: NodeDefine;
 }) {
   // TODO: style in props
-  const [Component, { componentStyle, nodeStyle, ...props }] = useRuntimeNode({ nodeDefine });
+  const [Component, { componentStyle, children, nodeStyle, ...props }] = useRuntimeNode({ nodeDefine });
 
   if (nodeDefine.hidden || !Component) return null;
 
@@ -22,6 +22,8 @@ export function RuntimeNode({
         style={componentStyle}
         {...props}
       />
+
+      {children?.length && children.map(child => <RuntimeNode nodeDefine={child}/>)}
     </div>
   );
 }

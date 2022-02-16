@@ -9,16 +9,24 @@ import {
 import './style.less';
 import { ActionContext } from '../actionHandler';
 
-export type RuntimeProps<T extends ActionContext> = UseRuntimeProps<T>;
+export type RuntimeProps<T extends ActionContext = any,
+  GlobalExtends = any,
+  PageExtends = any,
+  NodeExtends = any,
+> = UseRuntimeProps<T, GlobalExtends, PageExtends, NodeExtends>;
 
-export function Runtime<T extends ActionContext>({
+export function Runtime<T extends ActionContext = any,
+  GlobalExtends = any,
+  PageExtends = any,
+  NodeExtends = any,
+>({
   json2pageDefine,
   actions = [],
   components = [],
   context,
   envApi,
   options,
-}: RuntimeProps<T>) {
+}: RuntimeProps<T, GlobalExtends, PageExtends, NodeExtends>) {
   const [state, methods] = useRuntime({
     json2pageDefine,
     actions,

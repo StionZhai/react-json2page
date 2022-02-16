@@ -36,17 +36,35 @@ export interface NodeType {
 }
 
 // 通用样式属性、类名、css
-export interface NodeStyleDefine {
+export interface StyleDefine {
   styleProps?: React.CSSProperties;
   className?: string;
   css?: string;
 }
 
-export interface NodePosition {
+export type FixedPositionValue = number | '';
+
+export interface AbsoluteNodePosition {
+  type: 'absolute';
   x: number;
   y: number;
   w: number;
   h: number;
+}
+
+export interface FixedNodePosition {
+  type: 'fixed';
+  t: FixedPositionValue;
+  b: FixedPositionValue;
+  l: FixedPositionValue;
+  r: FixedPositionValue;
+  w: FixedPositionValue;
+  h: FixedPositionValue;
+}
+
+// TODO: 支持多种定位方式
+export type NodePosition = AbsoluteNodePosition | FixedNodePosition | {
+  type: 'custom';
 }
 
 export interface NodeListenerHandler {
@@ -69,9 +87,10 @@ export interface NodeDefine<T = any> {
   props: { [propKey: string]: any }; // 透传给组件渲染，editor需要处理业务逻辑，runtime不关注
   listeners?: NodeListener[];
   zIndex?: number;
-  style?: NodeStyleDefine;
+  style?: StyleDefine;
   hidden?: boolean;
   extends?: T;
+  children?: NodeDefine<T>[];
 }
 
 export interface PageDefine<PageExtends = any, NodeExtends = any> {
@@ -79,7 +98,8 @@ export interface PageDefine<PageExtends = any, NodeExtends = any> {
   title: string;
   nodes: NodeDefine<NodeExtends>[];
   dataset: Dataset;
-  style?: NodeStyleDefine;
+  style?: StyleDefine;
+  pageHeight?: 'full' | 'auto' | number;
   extends?: PageExtends;
 }
 
