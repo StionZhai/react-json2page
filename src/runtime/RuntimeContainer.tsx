@@ -43,6 +43,10 @@ export function getPageHeight(pageDefine: PageDefine): string | number {
       break;
     case 'auto':
       result = getMaxNodesY(pageDefine.nodes);
+
+      if (pageDefine.pagePaddingBottom) {
+        result += pageDefine.pagePaddingBottom;
+      }
       break;
     default:
       result = pageDefine.pageHeight;

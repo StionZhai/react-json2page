@@ -99,7 +99,9 @@ export interface PageDefine<PageExtends = any, NodeExtends = any> {
   nodes: NodeDefine<NodeExtends>[];
   dataset: Dataset;
   style?: StyleDefine;
-  pageHeight: 'full' | 'auto' | number;
+  pageHeight?: 'full' | 'auto' | number;
+  // 自动布局时用来撑开底部间距，仅对自动布局生效
+  pagePaddingBottom?: number;
   extends?: PageExtends;
 }
 
