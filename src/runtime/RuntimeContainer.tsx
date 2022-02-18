@@ -9,7 +9,7 @@ export interface RuntimeContainerProps extends StyledProps {
   pageDefine: PageDefine;
 }
 
-function getPageHeight(nodes: NodeDefine[]): number {
+export function getMaxNodesY(nodes: NodeDefine[]): number {
   let maxHeight = 0;
 
   if (nodes?.length) {
@@ -34,6 +34,24 @@ function getPageHeight(nodes: NodeDefine[]): number {
   return maxHeight;
 }
 
+export function getPageHeight(pageDefine: PageDefine): string | number {
+  let result;
+
+  switch (pageDefine.pageHeight) {
+    case 'full':
+      result = '100vh';
+      break;
+    case 'auto':
+      result = getMaxNodesY(pageDefine.nodes);
+      break;
+    default:
+      result = pageDefine.pageHeight;
+      break;
+  }
+
+  return result;
+}
+
 export function RuntimeContainer({
   pageDefine,
   className: outerClassName,
@@ -43,21 +61,7 @@ export function RuntimeContainer({
   const [containerHeight, setContainerHeight] = useState<string | number>('100vh');
 
   useEffect(() => {
-    let pageHeight;
-
-    switch (pageDefine.pageHeight) {
-      case 'full':
-        pageHeight = '100vh';
-        break;
-      case 'auto':
-        pageHeight = getPageHeight(pageDefine.nodes);
-        break;
-      default:
-        pageHeight = pageDefine.pageHeight;
-        break;
-    }
-
-    if (!pageHeight) pageHeight = '100vh';
+    const pageHeight = getPageHeight(pageDefine);
 
     if (pageHeight !== containerHeight) {
       setContainerHeight(pageHeight);
@@ -76,6 +80,7 @@ export function RuntimeContainer({
     <div
       className={classNames('json2page-runtime-container', className, outerClassName)}
       style={{
+        minHeight: '100vh',
         height: containerHeight,
         ...styleProps,
         ...style,

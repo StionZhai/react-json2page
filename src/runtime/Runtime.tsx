@@ -8,12 +8,16 @@ import {
 } from 'react-router-dom';
 import './style.less';
 import { ActionContext } from '../actionHandler';
+import { StyledProps } from '../types';
 
 export type RuntimeProps<T extends ActionContext = any,
   GlobalExtends = any,
   PageExtends = any,
   NodeExtends = any,
-> = UseRuntimeProps<T, GlobalExtends, PageExtends, NodeExtends>;
+> = UseRuntimeProps<T, GlobalExtends, PageExtends, NodeExtends> & {
+  containerClassName?: StyledProps['className'];
+  containerStyle?: StyledProps['style'];
+};
 
 export function Runtime<T extends ActionContext = any,
   GlobalExtends = any,
@@ -26,6 +30,8 @@ export function Runtime<T extends ActionContext = any,
   context,
   envApi,
   options,
+  containerClassName,
+  containerStyle,
 }: RuntimeProps<T, GlobalExtends, PageExtends, NodeExtends>) {
   const [state, methods] = useRuntime({
     json2pageDefine,
@@ -55,6 +61,8 @@ export function Runtime<T extends ActionContext = any,
               <RuntimeContainer
                 key={pageDefine.id}
                 pageDefine={pageDefine}
+                style={containerStyle}
+                className={containerClassName}
               />
             </Route>
           ))}

@@ -99,7 +99,7 @@ export interface PageDefine<PageExtends = any, NodeExtends = any> {
   nodes: NodeDefine<NodeExtends>[];
   dataset: Dataset;
   style?: StyleDefine;
-  pageHeight?: 'full' | 'auto' | number;
+  pageHeight: 'full' | 'auto' | number;
   extends?: PageExtends;
 }
 
