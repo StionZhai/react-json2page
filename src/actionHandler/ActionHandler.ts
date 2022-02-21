@@ -1,9 +1,9 @@
 import { ParamDefine } from '../types';
 import { RuntimeActions } from '../runtime';
 
-export function defineData<T extends {
+export function defineActionHandleConfig<P extends ParamDefine, T extends {
   [feedbackName: string]: ActionHandlerFeedbackDefine;
-}>(data: ActionHandlerConfig<T>) {
+}>(data: ActionHandlerConfig<P, T>) {
   return data;
 }
 
@@ -11,8 +11,8 @@ export interface ActionHandlerFeedbackDefine {
   title: string;
 }
 
-export interface ActionHandlerParams {
-  [paramKey: string]: ParamDefine;
+export interface ActionHandlerParams<T extends ParamDefine> {
+  [paramKey: string]: T;
 }
 
 export type ActionHandlerResponse<T> = T extends {} ? {
@@ -26,11 +26,11 @@ export type ActionHandlerResponse<T> = T extends {} ? {
 // 各 handler 需要保证各 feedback 都已处理完毕，具体可参考 controlDeviceData 的实现
 export type ActionHandlerApi<Feedbacks = unknown> = (params: any) => Promise<ActionHandlerResponse<Feedbacks | void>> | ActionHandlerResponse<Feedbacks | void>;
 
-export interface ActionHandlerConfig<Feedbacks extends {
+export interface ActionHandlerConfig<T extends ParamDefine, Feedbacks extends {
   [feedbackName: string]: ActionHandlerFeedbackDefine;
 }> {
   title: string;
-  params?: ActionHandlerParams;
+  params?: ActionHandlerParams<T>;
   feedbacks?: Feedbacks;
   handler: ActionHandlerApi<Feedbacks>;
 }
@@ -57,14 +57,14 @@ export abstract class ActionContext<T = any> {
   abstract init(): any;
 }
 
-export class ActionHandler<T = any> {
+export class ActionHandler<Context = any> {
   type: string;
-  context: T;
+  context: Context;
   handlers: {
-    [actionName: string]: ActionHandlerConfig<any>;
+    [actionName: string]: ActionHandlerConfig<any, any>;
   } = {};
 
-  constructor(context: T) {
+  constructor(context: Context) {
     this.context = context;
   }
 }

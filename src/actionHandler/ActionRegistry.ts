@@ -46,7 +46,7 @@ export class ActionRegistry<T extends ActionContext = any> {
     return actionTypeDefine;
   }
 
-  getActionDefine(actionType: string, actionName: string): ActionHandlerConfig<any> {
+  getActionDefine(actionType: string, actionName: string): ActionHandlerConfig<any, any> {
     const actionTypeDefine = this.getActionTypeHandlers(actionType);
 
     if (!actionTypeDefine) {
