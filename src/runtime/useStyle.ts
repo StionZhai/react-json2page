@@ -13,17 +13,16 @@ export const normalizeStyleDefine = (styleDefine: StyleDefine, nodePosition?: No
   };
 
   if (css && typeof css === 'string') {
-    css.replace(/[\r\n\s]/g, '')
+    css.replace(/[\r\n]/g, '')
       .split(';')
       .forEach((string) => {
         const [key, value] = string.split(':');
-
         // 正常来说 css 和 styleProps 应该是同步的，如果真有不同步，优先 styleProps
         if (key && value) {
-          const propName = kebabCase.reverse(key);
+          const propName = kebabCase.reverse(key).trim();
 
           if (!extendStyleProps[propName]) {
-            extendStyleProps[propName] = value;
+            extendStyleProps[propName] = value.trim();
           }
         }
       });
