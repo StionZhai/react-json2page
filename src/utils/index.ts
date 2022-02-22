@@ -1,5 +1,17 @@
 import { ComponentConfig } from '../Components';
 import { ParamDefine } from '../types';
+import postcss from 'postcss';
+import postcssJs from 'postcss-js';
+import React from 'react';
+
+export function cssTextToCssObject(cssText = '') {
+  return postcssJs.objectify(postcss.parse(cssText));
+}
+
+export async function cssObjectToCssText(cssObject = {}) {
+  const { css } = await postcss().process(cssObject, { parser: postcssJs });
+  return css;
+}
 
 export * from './isPlainObject';
 
