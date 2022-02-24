@@ -15,6 +15,11 @@ class ComponentRegistry {
   }
 
   find(nodeType: NodeType): ComponentExportInfo {
+    if (!nodeType) {
+      console.log('[ComponentRegistry.find] NodeType不存在', nodeType);
+      return null;
+    }
+
     if (this.modules[nodeType.module]) {
       const Component = this.modules[nodeType.module]?.components?.[nodeType.component];
 
